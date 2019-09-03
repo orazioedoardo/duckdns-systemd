@@ -3,7 +3,7 @@ Description=Duck DNS Updater
 
 [Service]
 Type=simple
-ExecStart=/home/user/bin/duckdns
+ExecStart=/home/userduckdns
 
 [Install]
 WantedBy=default.target
