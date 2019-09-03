@@ -2,13 +2,13 @@
 [Duck DNS](https://www.duckdns.org/) updater script with a dedicated systemd unit and logging configuration
 
 ### Why this script over the default cron entry?
-- This script only updates the IP if it has actually changed, instead of connecting to duckdns.org every X minutes.
+- This script only updates the IP if it has actually changed, instead of connecting to www.duckdns.org every X minutes.
 - This script logs to a file, which is useful for diagnostics.
 - The [suggested command](https://www.duckdns.org/install.jsp#linux-cron) uses `curl -k`, which does not verify the server certificate, making the connection vulnerable to MiTM, see [here](https://curl.haxx.se/docs/manpage.html#-k). Probably they did this because some embedded devices like routers may not have a trust store to check the certificate against.
 
 ### Installation
 
-Install `dig` to query the DNS for the current IP addres, and curl to use the API
+Install `dig` to query the DNS for the current IP addres, and `curl` to use the API
 ```
 sudo apt install dnsutils curl
 ```
