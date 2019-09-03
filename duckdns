@@ -1,0 +1,43 @@
+#!/bin/bash
+
+LANG=en_US.UTF-8
+
+LAST_IP="$HOME/.duckdns/last-ip"
+CONFIG="$HOME/.duckdns/config"
+
+if [ -f "$CONFIG" ]; then
+    source "$CONFIG"
+else
+    logger -t duckdns "Configuration not found"
+    exit 1
+fi
+
+if [ ! -f "$LAST_IP" ]; then
+    if NEW_IP="$(dig +short myip.opendns.com @208.67.222.222)"; then
+        echo "$NEW_IP" > "$LAST_IP"
+        logger -t duckdns "Initialization succeded, domain: $DOMAIN.duckdns.org, IP: $NEW_IP"
+    else
+        logger -t duckdns "Unable to detect the public IP address"
+        exit 1
+    fi
+fi
+
+while true; do
+    if CURRENT_IP="$(dig +short myip.opendns.com @208.67.222.222)"; then
+        if [ "$CURRENT_IP" != "$(< $LAST_IP)" ]; then
+            if RESULT="$(curl -s "https://www.duckdns.org/update?domains=$DOMAIN&token=$TOKEN&ip=$CURRENT_IP")"; then
+                if [ "$RESULT" = "OK" ]; then
+                    echo "$CURRENT_IP" > "$LAST_IP"
+                    logger -t duckdns "Update succeded, new IP: $CURRENT_IP"
+                else
+                    logger -t duckdns "Update failed, HTTP API error"
+                fi
+            else
+                logger -t duckdns "Update failed, unable to connect"
+            fi
+        fi
+    else
+        logger -t duckdns "Unable to detect the public IP address"
+    fi
+    sleep $INTERVAL
+done

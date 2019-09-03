@@ -1,0 +1,9 @@
+[Unit]
+Description=Duck DNS Updater
+
+[Service]
+Type=simple
+ExecStart=/home/user/bin/duckdns
+
+[Install]
+WantedBy=default.target
