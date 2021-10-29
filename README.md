@@ -57,6 +57,7 @@ INTERVAL=300
 Start and enable the service
 ```
 sudo loginctl enable-linger $(whoami)
+systemctl --user daemon-reload
 systemctl --user start duckdns
 systemctl --user enable duckdns
 ```
