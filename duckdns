@@ -24,7 +24,8 @@ if [ ! -f "$LAST_IP" ]; then
 fi
 
 if [ ! -f "$LAST_IPV6" ]; then
-    if NEW_IPV6="$(dig +short -6 myip.opendns.com aaaa @resolver1.ipv6-sandbox.opendns.com)"; then
+    if NEW_IPV6="$(dig +short -6 myip.opendns.com aaaa @resolver1.ipv6-sandbox.opendns.com)" || \
+       NEW_IPV6="$(dig -6 TXT +short o-o.myaddr.l.google.com @ns1.google.com)"; then
         echo "$NEW_IPV6" > "$LAST_IPV6"
         logger -t duckdns "Initialization succeeded, domain: $DOMAIN.duckdns.org, IP: $NEW_IPV6"
     else
@@ -51,7 +52,8 @@ while true; do
     else
         logger -t duckdns "Unable to detect the public IPv4 address"
     fi
-    if CURRENT_IPV6="$(dig +short -6 myip.opendns.com aaaa @resolver1.ipv6-sandbox.opendns.com)"; then
+    if CURRENT_IPV6="$(dig +short -6 myip.opendns.com aaaa @resolver1.ipv6-sandbox.opendns.com)" || \
+       CURRENT_IPV6="$(dig -6 TXT +short o-o.myaddr.l.google.com @ns1.google.com)"; then
         if [ "$CURRENT_IPV6" != "$(< $LAST_IPV6)" ]; then
             if RESULT="$(curl -s "https://www.duckdns.org/update?domains=$DOMAIN&token=$TOKEN&ipv6=$CURRENT_IPV6")"; then
                 if [ "$RESULT" = "OK" ]; then
